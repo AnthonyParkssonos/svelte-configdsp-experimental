@@ -2,9 +2,8 @@
     // Import necessary stores and utilities
     import { gMainData, gCurrentlyWorking } from '../stores/globalStore';
     import { get } from 'svelte/store';
-    import Tree from '../components/Tree.svelte';
-    import { render } from 'svelte/server';
-    import Page from '../routes/+page.svelte';
+    import Tree from './Tree.svelte';
+    import { read } from '$app/server';
 
     // Add the logic from configDSP.js here
     let doc : Document;
@@ -12,6 +11,15 @@
     let nodes = "";
     let rootNode : HTMLElement;
     let loaded = false;
+    let treeData = {
+        name: '',
+        type: '',
+        text: '',
+        value: '',
+        readonly: false,
+        attributes: {},
+        children: []
+    };
 
     // Example function from configDSP.js
     function startCurrentlyWorking() {
@@ -44,9 +52,32 @@
             });
 
         rootNode = doc.documentElement;
+        treeData = parseXMLToTree(rootNode);
+        console.log('Tree Data:', treeData);
         loaded = true;
 
+    }
 
+    const parseXMLToTree = (node) => {
+        // Example function to parse XML to tree structure
+        return {
+            name: node.getAttribute('name') || "Root",
+            // Get only the direct text content, not including child elements
+            id: node.getAttribute('id') || '',
+            type: node.nodeName || 'root',
+            value: node.getAttribute('value') || '',
+            text: Array.from(node.childNodes)
+                .filter(child => child.nodeType === Node.TEXT_NODE)
+                .map(child => child.textContent?.trim())
+                .join('')
+                .trim() || '',
+            // Get attributes as an object
+            attributes: '',
+            readonly: node.getAttribute('readonly') === 'true',
+            vartype: node.getAttribute('vartype') || '',
+            // Recursively process child elements
+            children: Array.from(node.children).map(child => parseXMLToTree(child))
+        };
     }
 
     const dumpNodes = () => {
@@ -83,17 +114,12 @@
 </div>
 
 
-    <div class="lg:m-8 md:m-4 lg:w-1/2">
+    <div class="ml-8 lg:m-8 md:m-4 lg:w-1/2">
         <!-- populate blocks from doc -->
         <!-- Add any additional HTML structure here -->
          {#if loaded}
          <Tree
-            name="DSP Tree"
-            blocks={Array.from(rootNode.childNodes).map((node) => ({
-                name: node.nodeName,
-                text: node.textContent,
-            }))}
-            expanded={true}
+            node={treeData}
         />
         {/if}
     </div>
