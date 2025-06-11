@@ -1,18 +1,12 @@
-# sv
+# svelte-configdsp
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Set up:
 
-## Creating a project
+First, you need node js install. If you want to connect to a player, for now you need a CORS unblocker extension https://chromewebstore.google.com/detail/cors-unblock/lfhmikememgdcahcdlaciloancbhjino?hl=en
 
-If you're seeing this, you've probably already done this step. Congrats!
+Install the npm packages:
+`npm install` 
 
-```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
 
 ## Developing
 
